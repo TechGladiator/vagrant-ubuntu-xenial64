@@ -7,3 +7,4 @@ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo apt-get install -y mongodb-org
 sudo service mongod start
+sudo npm install http-server -g
