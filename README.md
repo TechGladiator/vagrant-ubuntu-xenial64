@@ -1,7 +1,7 @@
 # vagrant-ubuntu-xenial64
 A Vagrantfile and provisioning script to setup a Vagrant box with the latest Git, Node, and MongoDB on Ubuntu 16.04.
 
-Requires [VirtualBox](https://www.virtualbox.org/) and [Vagrant](https://www.vagrantup.com/).
+Requires [VirtualBox](https://www.virtualbox.org/) and [Vagrant](https://www.vagrantup.com/). I also recommend [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest) to insure the that your guest additions get updated properly.
 
 Copy `Vagrantfile` and `bootstrap.sh` to the directory you want to share with and run your Vagrant box from.
 
