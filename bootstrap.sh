@@ -5,6 +5,13 @@ sudo apt-get update
 sudo apt install -y git
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y nodejs
+sudo mkdir /home/ubuntu/.npm-global
+npm config set prefix '/home/ubuntu/.npm-global'
+echo 'prefix=~/.npm-global' >> /home/ubuntu/.npmrc
+echo 'export PATH=~/.npm-global/bin:$PATH' >> /home/ubuntu/.profile
+npm i -g npm
+sudo chown -R ubuntu /home/ubuntu/.npm-global
+sudo chown -R ubuntu /home/ubuntu/.npmrc
 sudo apt-get install -y mongodb-org
 sudo mkdir /data/
 sudo mkdir /data/db
