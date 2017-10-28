@@ -8,5 +8,3 @@ Copy `Vagrantfile` and `bootstrap.sh` to the directory you want to share with an
 Open the directory in your terminal and enter `Vagrant Up`.
 
 To learn more about Vagrant, see this [Getting Started Guide](https://www.vagrantup.com/intro/getting-started/index.html).
-
-If anyone knows how to get NPM to install automatically with permissions fixed through provisioning, please submit a pull request! 😃
