@@ -27,9 +27,19 @@ Once your Vagrant box is booted and has completed provisioning:
 $ vagrant ssh
 ```
 
-This will log you into your vagrant box, where you can perform or run anything that you would normally in an Ubuntu 16.04 bash terminal.
+This will log you into your vagrant box.
 
 The bootstrap.sh provisioning script will make sure the latest versions of git, nodejs, and mongoDB are installed, including setting up proper permissions for Mongo and NPM.
+
+Open your shared folder within your vagrant box, where you can perform or run anything that you would normally in an Ubuntu 16.04 bash terminal:
+
+```
+ubuntu@ ~ $ cd /vagrant/
+```
+
+## Managing Your Vagrant Box
+
+Your host machine terminal is used to manage your Vagrant box guest.
 
 To reboot:
 
@@ -55,7 +65,7 @@ To shutdown (halt):
 $ vagrant halt
 ```
 
-To remove the virtual machine and all traces of it:
+To remove the virtual machine completely:
 
 ```
 $ vagrant destroy
