@@ -7,7 +7,7 @@ I also recommend [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest
 
 ## After installing vagrant
 
-```bash
+```
 $ vagrant plugin install vagrant-vbguest
 ```
 
@@ -17,13 +17,13 @@ Copy `Vagrantfile` and `bootstrap.sh` to the directory you want to share with an
 
 Open the directory in your terminal, console or command line.
 
-```bash
+```
 $ Vagrant Up
 ```
 
 Once your Vagrant box is booted and has completed provisioning:
 
-```bash
+```
 $ vagrant ssh
 ```
 
@@ -33,31 +33,31 @@ The bootstrap.sh provisioning script will make sure the latest versions of git, 
 
 To reboot:
 
-```bash
+```
 $ vagrant reload
 ```
 
 To reboot and provision or re-provision:
 
-```bash
+```
 $ vagrant reload --provision
 ```
 
 To suspend:
 
-```bash
+```
 $ vagrant suspend
 ```
 
 To shutdown (halt):
 
-```bash
+```
 $ vagrant halt
 ```
 
 To remove the virtual machine and all traces of it:
 
-```bash
+```
 $ vagrant destroy
 ```
 
