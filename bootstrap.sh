@@ -10,6 +10,7 @@ npm config set prefix '/home/ubuntu/.npm-global'
 echo 'prefix=~/.npm-global' >> /home/ubuntu/.npmrc
 echo 'export PATH=~/.npm-global/bin:$PATH' >> /home/ubuntu/.profile
 npm i -g npm
+npm install http-server -g
 sudo chown -R ubuntu /home/ubuntu/.npm-global
 sudo chown -R ubuntu /home/ubuntu/.npmrc
 sudo apt install -y mongodb-org
