@@ -1,6 +1,60 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Anything related to getting ember.js set up is included below
+$rootScriptBefore = <<SCRIPT
+  # Include git and curl related commands here
+  cd /home/ubuntu
+  apt-get update
+  # Install dependency to use make
+  apt-get -y install build-essential
+  # Install dependencies for watchman
+  apt-get -y install python-dev
+  apt-get -y install automake
+SCRIPT
+
+$userScript = <<SCRIPT
+  cd /home/ubuntu
+  # Install nvm as the default 'ubuntu' user
+  wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
+  # Enable nvm without a logout/login
+  export NVM_DIR="/home/ubuntu/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+  if ! command -v node >/dev/null 2>&1; then
+    echo "Installing nodejs ..."
+    # Install nodejs and alias
+    nvm install v6.7.0
+    nvm alias default 6.7.0
+  fi
+  if ! command -v ember >/dev/null 2>&1; then
+    npm set progress=false
+    # workaround to npm bug which cause it to hang
+    npm install -g --verbose npm@latest
+    npm update -verbose
+    npm install -g --verbose bower@latest
+    npm install -g --verbose ember-cli@2.6
+    # set up project
+    cd /home/ubuntu/project/webroot
+    npm install --no-bin-links --verbose || npm install --no-bin-links --verbose
+    bower install --verbose
+  else
+    cd /home/ubuntu/project/webroot
+    npm install --no-bin-links --verbose
+    bower install --verbose
+  fi
+SCRIPT
+
+$rootScriptAfter = <<SCRIPT
+  if ! command -v watchman >/dev/null 2>&1; then
+    git clone https://github.com/facebook/watchman.git
+    cd watchman
+    ./autogen.sh
+    ./configure
+    make
+    make install
+  fi
+SCRIPT
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
