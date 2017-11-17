@@ -4,55 +4,65 @@
 # Anything related to getting ember.js set up is included below
 $rootScriptBefore = <<SCRIPT
   # Include git and curl related commands here
-  cd /home/ubuntu
+  add-apt-repository ppa:git-core/ppa
+  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+  echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+  echo "apt-get update"
   apt-get update
-  # Install dependency to use make
-  apt-get -y install build-essential
-  # Install dependencies for watchman
-  apt-get -y install python-dev
-  apt-get -y install automake
-SCRIPT
-
-$userScript = <<SCRIPT
+  echo "Installing git ..."
+  apt install -y git
+  echo "Installing MongoDB ..."
+  apt install -y mongodb-org
+  mkdir /data/
+  mkdir /data/db
+  chmod 777 /data/db
+  systemctl enable mongod.service
+  service mongod start
   cd /home/ubuntu
-  # Install nvm as the default 'ubuntu' user
-  wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
-  # Enable nvm without a logout/login
-  export NVM_DIR="/home/ubuntu/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-  if ! command -v node >/dev/null 2>&1; then
-    echo "Installing nodejs ..."
-    # Install nodejs and alias
-    nvm install v6.7.0
-    nvm alias default 6.7.0
-  fi
-  if ! command -v ember >/dev/null 2>&1; then
-    npm set progress=false
-    # workaround to npm bug which cause it to hang
-    npm install -g --verbose npm@latest
-    npm update -verbose
-    npm install -g --verbose bower@latest
-    npm install -g --verbose ember-cli@2.6
-    # set up project
-    cd /home/ubuntu/project/webroot
-    npm install --no-bin-links --verbose || npm install --no-bin-links --verbose
-    bower install --verbose
-  else
-    cd /home/ubuntu/project/webroot
-    npm install --no-bin-links --verbose
-    bower install --verbose
-  fi
+  # # Install dependency to use make
+  echo "Installing build-essential ..."
+  apt -y install build-essential
+  # # Install dependencies for watchman
+  echo "Installing python-dev ..."
+  apt -y install python-dev
+  echo "Installing automake ..."
+  apt -y install automake
+  apt -y install libtool
+  apt -y install pkg-config
+  apt -y install libssl-dev
+SCRIPT
+  
+$userScript = <<SCRIPT
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+  git config --global credential.helper cache
+  git config --global credential.helper 'cache --timeout=3600'
+  cd /home/ubuntu
+  curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+  echo "Installing nodejs ..."
+  sudo apt install -y nodejs
+  mkdir ~/.npm-global
+  npm config set prefix '~/.npm-global'
+  echo 'export PATH=~/.npm-global/bin:$PATH' >> /home/ubuntu/.profile
+  source ~/.profile
+  echo "updating npm ..."
+  npm set progress=false
+  # workaround to npm bug which cause it to hang
+  npm i -g --verbose npm@latest
+  echo "install bower ..."
+  npm i -g --verbose bower@latest
+  echo "install ember-cli ..."
+  npm i -g --verbose ember-cli@2.16
 SCRIPT
 
 $rootScriptAfter = <<SCRIPT
-  if ! command -v watchman >/dev/null 2>&1; then
-    git clone https://github.com/facebook/watchman.git
-    cd watchman
-    ./autogen.sh
-    ./configure
-    make
-    make install
-  fi
+  cd /home/ubuntu/project
+  git clone https://github.com/facebook/watchman.git
+  cd watchman
+  ./autogen.sh
+  ./configure
+  make
+  make install
 SCRIPT
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
@@ -80,7 +90,7 @@ Vagrant.configure("2") do |config|
   # NOTE: This will enable public access to the opened port
   config.vm.network "forwarded_port", guest: 8080, host: 8080
   config.vm.network "forwarded_port", guest: 4200, host: 4200
-  config.vm.network "forwarded_port", guest: 7200, host: 7200
+  config.vm.network "forwarded_port", guest: 7200, host: 7020
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -101,18 +111,23 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.synced_folder "./", "/home/ubuntu/project", :nfs => true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
+  cpus = "1"
+  memory = "1024"
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ["modifyvm", :id, "--cpus", cpus, "--memory", memory]
+    vb.customize ["modifyvm", :id, "--uartmode1", "disconnected"] # speed up boot https://bugs.launchpad.net/cloud-images/+bug/1627844
   #   # Display the VirtualBox GUI when booting the machine
   #   vb.gui = true
   #
   #   # Customize the amount of memory on the VM:
   #   vb.memory = "1024"
-  # end
+  end
   #
   # View the documentation for the provider you are using for more
   # information on available options.
@@ -124,4 +139,9 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+
+  # Shell provisioning
+  config.vm.provision "shell", inline: $rootScriptBefore
+  config.vm.provision "shell", inline: $userScript, privileged: false
+  config.vm.provision "shell", inline: $rootScriptAfter
 end
