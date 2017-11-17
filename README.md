@@ -13,7 +13,7 @@ $ vagrant plugin install vagrant-vbguest
 
 ## Setup
 
-Copy `Vagrantfile` and `bootstrap.sh` to the directory you want to share with and run the Vagrant box from.
+Copy `Vagrantfile` to the directory you want to share with and run the Vagrant box from.
 
 Open the directory in your terminal, console or command line.
 
